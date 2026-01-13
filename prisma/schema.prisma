@@ -1,0 +1,16 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  // url removed in Prisma 7
+}
+
+model User {
+  id        String  @id @default(cuid())
+  name      String?
+  email     String  @unique
+  image     String?
+  createdAt DateTime @default(now())
+}
