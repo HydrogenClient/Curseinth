@@ -7,7 +7,6 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [mcFilter, setMcFilter] = useState("All");
 
-  // Read user from cookie
   useEffect(() => {
     const username = document.cookie
       .split("; ")
@@ -16,14 +15,12 @@ export default function Home() {
     if (username) setUser(decodeURIComponent(username));
   }, []);
 
-  // Fetch mods list
   useEffect(() => {
     fetch("/api/mods/list")
       .then((res) => res.json())
       .then((data) => setMods(data.mods));
   }, []);
 
-  // Filter mods by search and MC type
   const filtered = mods.filter((mod) => {
     const matchesSearch = mod.modName.toLowerCase().includes(search.toLowerCase());
     const matchesMC = mcFilter === "All" || mod.mcType === mcFilter;
@@ -32,7 +29,6 @@ export default function Home() {
 
   return (
     <div style={{ padding: 40, maxWidth: 1200, margin: "auto", color: "#fff", fontFamily: "Arial, sans-serif" }}>
-      {/* Login / Publish */}
       {!user ? (
         <a
           href="/api/auth/github"
@@ -69,7 +65,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Search & Filter */}
       <div style={{ marginTop: 20, marginBottom: 20, display: "flex", gap: 10, flexWrap: "wrap" }}>
         <input
           type="text"
@@ -89,7 +84,6 @@ export default function Home() {
         </select>
       </div>
 
-      {/* Mods Grid */}
       <div style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
