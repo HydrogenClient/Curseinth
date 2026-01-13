@@ -1,11 +1,6 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
 
-// In-memory store for the currently logged-in user
-let currentUser: string | null = null;
-
-export { currentUser }; // export to use on homepage/publish
-
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
@@ -32,10 +27,15 @@ export async function GET(req: Request) {
   });
 
   const username = userRes.data.login;
-  currentUser = username;
 
-  console.log("Logged in GitHub user:", username);
+  // Set a cookie with the username
+  const res = NextResponse.redirect(new URL('/', req.url));
+  res.cookies.set("github_user", username, {
+    path: "/",
+    httpOnly: false,
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+  });
 
-  // Redirect to homepage
-  return NextResponse.redirect(new URL('/', req.url));
+  return res;
 }

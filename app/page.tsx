@@ -6,11 +6,13 @@ export default function Home() {
   const [mods, setMods] = useState<any[]>([]);
   const [search, setSearch] = useState("");
 
-  // Fetch the current user from the backend
+  // Read user from cookie
   useEffect(() => {
-    fetch("/api/auth/current")
-      .then((res) => res.json())
-      .then((data) => setUser(data.user));
+    const username = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("github_user="))
+      ?.split("=")[1];
+    if (username) setUser(decodeURIComponent(username));
   }, []);
 
   // Fetch mods list
@@ -29,14 +31,7 @@ export default function Home() {
       {!user ? (
         <a
           href="/api/auth/github"
-          style={{
-            background: "#fff",
-            color: "#000",
-            padding: 10,
-            borderRadius: 6,
-            display: "inline-block",
-            marginBottom: 20,
-          }}
+          style={{ background: "#fff", color: "#000", padding: 10, borderRadius: 6, display: "inline-block", marginBottom: 20 }}
         >
           Sign in with GitHub
         </a>
@@ -45,13 +40,7 @@ export default function Home() {
           <p>Logged in as {user}</p>
           <a
             href="/publish"
-            style={{
-              background: "#0f0",
-              color: "#000",
-              padding: 10,
-              borderRadius: 6,
-              display: "inline-block",
-            }}
+            style={{ background: "#0f0", color: "#000", padding: 10, borderRadius: 6, display: "inline-block" }}
           >
             Publish a Mod
           </a>
@@ -71,25 +60,13 @@ export default function Home() {
         {filtered.map((mod) => (
           <div
             key={mod.id}
-            style={{
-              border: "1px solid #fff",
-              padding: 10,
-              margin: 10,
-              borderRadius: 6,
-            }}
+            style={{ border: "1px solid #fff", padding: 10, margin: 10, borderRadius: 6 }}
           >
             <strong>{mod.modName}</strong> ({mod.mcType}) <br />
             Version: {mod.version} <br />
             Author: {mod.author} <br />
             Description: {mod.description} <br />
-            File:{" "}
-            <a
-              href={mod.downloadUrl}
-              download
-              style={{ color: "#0ff", textDecoration: "underline" }}
-            >
-              {mod.fileName}
-            </a>
+            File: <a href={mod.downloadUrl} download style={{ color: "#0ff", textDecoration: "underline" }}>{mod.fileName}</a>
           </div>
         ))}
       </div>

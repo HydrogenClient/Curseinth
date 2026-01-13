@@ -11,9 +11,11 @@ export default function Publish() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("/api/auth/current")
-      .then((res) => res.json())
-      .then((data) => setUser(data.user));
+    const username = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("github_user="))
+      ?.split("=")[1];
+    if (username) setUser(decodeURIComponent(username));
   }, []);
 
   const handlePublish = async () => {

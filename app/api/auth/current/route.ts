@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { currentUser } from "../github/callback/route";
 
-export async function GET() {
-  return NextResponse.json({ user: currentUser });
+export async function GET(req: Request) {
+  const username = req.cookies.get("github_user")?.value || null;
+  return NextResponse.json({ user: username });
 }
