@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
+import { cookies } from "next/headers";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
-  if (!code) return NextResponse.redirect("/");
+  if (!code) return NextResponse.redirect("https://curseinth.vercel.app/");
 
   // Exchange code for access token
   const tokenRes = await axios.post(
@@ -19,7 +20,7 @@ export async function GET(req: Request) {
   );
 
   const accessToken = tokenRes.data.access_token;
-  if (!accessToken) return NextResponse.redirect("/");
+  if (!accessToken) return NextResponse.redirect("https://curseinth.vercel.app/");
 
   // Get GitHub username
   const userRes = await axios.get("https://api.github.com/user", {
@@ -29,13 +30,14 @@ export async function GET(req: Request) {
   const username = userRes.data.login;
 
   // Set cookie
-  const res = NextResponse.redirect("/"); // go to homepage after login
-  res.cookies.set("github_user", username, {
+  const cookieStore = await cookies();
+  cookieStore.set("github_user", username, {
     path: "/",
     httpOnly: false,
     sameSite: "lax",
     maxAge: 60 * 60 * 24 * 7, // 7 days
   });
 
-  return res;
+  // Redirect to homepage
+  return NextResponse.redirect("https://curseinth.vercel.app/");
 }
